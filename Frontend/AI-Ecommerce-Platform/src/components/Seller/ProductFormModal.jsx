@@ -11,8 +11,8 @@ const emptyForm = {
   price: '',
   discountPercent: '',
   brand: '',
-  category: '',
-  available: true,
+  category: 'Electronics',
+  stockCount: 1,
   imageUrls: '',
   specifications: ''
 };
@@ -50,8 +50,7 @@ export function ProductFormModal({ isOpen, onClose, productId, onSuccess }) {
         price: data.price,
         discountPercent: data.discountPercent || '',
         brand: data.brand || '',
-        category: data.category || '',
-        available: data.available,
+        category: data.category || 'Electronics',
         imageUrls: (data.imageUrls || []).join('\n'),
         specifications: specsStr
       });
@@ -91,11 +90,14 @@ export function ProductFormModal({ isOpen, onClose, productId, onSuccess }) {
         price: parseFloat(form.price),
         discountPercent: form.discountPercent ? parseFloat(form.discountPercent) : null,
         brand: form.brand.trim(),
-        category: form.category.trim(),
-        available: form.available,
+        category: form.category,
         imageUrls: urls,
         specifications: specsObj
       };
+
+      if (!productId) {
+        payload.stockCount = parseInt(form.stockCount);
+      }
 
       if (productId) {
         await updateProduct(productId, payload);
@@ -129,8 +131,19 @@ export function ProductFormModal({ isOpen, onClose, productId, onSuccess }) {
               <input type="text" name="name" value={form.name} onChange={handleChange} required minLength={2} maxLength={200} />
             </label>
             <label>
-              Category
-              <input type="text" name="category" value={form.category} onChange={handleChange} />
+              Category *
+              <select name="category" value={form.category} onChange={handleChange} required>
+                <option value="Electronics">Electronics</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Books">Books</option>
+                <option value="Home & Garden">Home & Garden</option>
+                <option value="Sports">Sports</option>
+                <option value="Toys">Toys</option>
+                <option value="Automotive">Automotive</option>
+                <option value="Health & Beauty">Health & Beauty</option>
+                <option value="Grocery">Grocery</option>
+                <option value="Pet Supplies">Pet Supplies</option>
+              </select>
             </label>
             <label>
               Price ($) *
@@ -144,10 +157,12 @@ export function ProductFormModal({ isOpen, onClose, productId, onSuccess }) {
               Brand
               <input type="text" name="brand" value={form.brand} onChange={handleChange} />
             </label>
-            <label className="checkbox-label">
-              <input type="checkbox" name="available" checked={form.available} onChange={handleChange} />
-              Is Active / Available to Customers
-            </label>
+            {!productId && (
+              <label>
+                Initial Stock Count *
+                <input type="number" min="1" name="stockCount" value={form.stockCount} onChange={handleChange} required />
+              </label>
+            )}
             <label className="full-width">
               Short Description * (Max 500 chars)
               <textarea name="shortDescription" value={form.shortDescription} onChange={handleChange} required maxLength={500} rows={2} />

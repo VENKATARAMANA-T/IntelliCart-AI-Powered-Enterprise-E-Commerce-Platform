@@ -105,12 +105,16 @@ export function ProductDetail({ productId, onBack, onAddToCart, onBuyNow, user }
         {/* Right: Buy Box */}
         <div className="buy-box">
           <h3 className="buy-price">${product.price?.toFixed(2)}</h3>
-          <p className="stock-status">In Stock.</p>
+          {product.stockCount > 0 ? (
+            <p className="stock-status" style={{color: 'green'}}>In Stock. ({product.stockCount} available)</p>
+          ) : (
+            <p className="stock-status" style={{color: 'red'}}>Out of Stock.</p>
+          )}
           <p className="sold-by">Sold by <strong>{product.sellerUsername}</strong></p>
           
           <div className="buy-actions">
-            <Button onClick={() => onAddToCart(product)} className="full-width rounded-btn bg-yellow">Add to Cart</Button>
-            <Button onClick={() => onBuyNow(product)} className="full-width rounded-btn bg-orange">Buy Now</Button>
+            <Button onClick={() => onAddToCart(product)} className="full-width rounded-btn bg-yellow" disabled={product.stockCount <= 0}>Add to Cart</Button>
+            <Button onClick={() => onBuyNow(product)} className="full-width rounded-btn bg-orange" disabled={product.stockCount <= 0}>Buy Now</Button>
           </div>
         </div>
       </div>

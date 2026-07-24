@@ -41,6 +41,10 @@ public class CreateProductRequest {
 
     private Map<String, String> specifications = new HashMap<>();
 
+    @NotNull(message = "Stock count is required")
+    @Positive(message = "Stock count must be greater than zero")
+    private Integer stockCount;
+
     // -----------------------------------------------------------------------
     // Constructors
     // -----------------------------------------------------------------------
@@ -78,4 +82,7 @@ public class CreateProductRequest {
 
     public Map<String, String> getSpecifications() { return specifications; }
     public void setSpecifications(Map<String, String> specifications) { this.specifications = specifications; }
+
+    public Integer getStockCount() { return stockCount; }
+    public void setStockCount(Integer stockCount) { this.stockCount = stockCount; }
 }

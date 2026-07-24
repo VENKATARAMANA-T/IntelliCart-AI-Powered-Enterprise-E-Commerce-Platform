@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.Product_Service.feign.InventoryServiceClient;
+import java.util.Map;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +39,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private InventoryServiceClient inventoryServiceClient;
+
     // =========================================================================
     // CREATE
     // =========================================================================
@@ -57,11 +62,19 @@ public class ProductServiceImpl implements ProductService {
                 .specifications(request.getSpecifications() != null ? request.getSpecifications() : java.util.Map.of())
                 .sellerId(sellerId)
                 .sellerUsername(sellerUsername)
-                .available(true)
                 .build();
 
         Product saved = productRepository.save(product);
         log.info("Product created: id={}, name='{}', seller={}", saved.getId(), saved.getName(), sellerUsername);
+        
+        try {
+            inventoryServiceClient.initStock(saved.getId(), new InventoryServiceClient.InitStockRequest(
+                saved.getName(), saved.getCategory(), saved.getSellerUsername(), request.getStockCount()
+            ));
+        } catch (Exception e) {
+            log.error("Failed to initialize stock for product {}", saved.getId(), e);
+        }
+
         return toProductResponse(saved);
     }
 
@@ -72,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public List<ProductSummaryResponse> getAllProducts() {
-        return productRepository.findByAvailableTrue()
+        return productRepository.findAll()
                 .stream()
                 .map(this::toProductSummaryResponse)
                 .collect(Collectors.toList());
@@ -140,9 +153,6 @@ public class ProductServiceImpl implements ProductService {
         if (request.getSpecifications() != null) {
             product.setSpecifications(request.getSpecifications());
         }
-        if (request.getAvailable() != null) {
-            product.setAvailable(request.getAvailable());
-        }
 
         Product updated = productRepository.save(product);
         log.info("Product updated: id={}, seller={}", id, sellerId);
@@ -191,7 +201,7 @@ public class ProductServiceImpl implements ProductService {
                 .specifications(product.getSpecifications())
                 .sellerId(product.getSellerId())
                 .sellerUsername(product.getSellerUsername())
-                .available(product.getAvailable())
+                .stockCount(fetchStock(product.getId()))
                 .averageRating(product.getAverageRating())
                 .totalReviews(product.getTotalReviews())
                 .createdAt(product.getCreatedAt())
@@ -217,9 +227,19 @@ public class ProductServiceImpl implements ProductService {
                 .discountPercent(product.getDiscountPercent())
                 .averageRating(product.getAverageRating())
                 .totalReviews(product.getTotalReviews())
-                .available(product.getAvailable())
+                .stockCount(fetchStock(product.getId()))
                 .thumbnailUrl(thumbnail)
                 .sellerUsername(product.getSellerUsername())
                 .build();
+    }
+
+    private Integer fetchStock(Long productId) {
+        try {
+            Map<String, Object> response = inventoryServiceClient.getStock(productId);
+            return (Integer) response.get("stockQuantity");
+        } catch (Exception e) {
+            log.warn("Could not fetch stock for product {}", productId);
+            return 0;
+        }
     }
 }

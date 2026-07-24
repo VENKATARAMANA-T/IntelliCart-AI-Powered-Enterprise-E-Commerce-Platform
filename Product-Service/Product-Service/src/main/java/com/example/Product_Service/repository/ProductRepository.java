@@ -20,20 +20,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findBySellerId(Long sellerId);
 
     /**
-     * Find all products currently available for customers to browse.
-     * Used by the public product listing endpoint.
-     */
-    List<Product> findByAvailableTrue();
-
-    /**
      * Find available products in a specific category.
      * Used for category-based browsing.
      */
-    List<Product> findByCategoryAndAvailableTrue(String category);
+    List<Product> findByCategory(String category);
 
     /**
      * Search available products by name (case-insensitive contains).
      * Used for basic keyword search.
      */
-    List<Product> findByNameContainingIgnoreCaseAndAvailableTrue(String keyword);
+    List<Product> findByNameContainingIgnoreCase(String keyword);
 }

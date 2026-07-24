@@ -81,13 +81,6 @@ public class Product {
     private String sellerUsername;
 
     // -----------------------------------------------------------------------
-    // Availability
-    // -----------------------------------------------------------------------
-
-    @Column(nullable = false)
-    private Boolean available = true;
-
-    // -----------------------------------------------------------------------
     // Review aggregates — denormalized; updated by ReviewServiceImpl
     // -----------------------------------------------------------------------
 
@@ -165,9 +158,6 @@ public class Product {
     public String getSellerUsername() { return sellerUsername; }
     public void setSellerUsername(String sellerUsername) { this.sellerUsername = sellerUsername; }
 
-    public Boolean getAvailable() { return available; }
-    public void setAvailable(Boolean available) { this.available = available; }
-
     public Double getAverageRating() { return averageRating; }
     public void setAverageRating(Double averageRating) { this.averageRating = averageRating; }
 
@@ -200,7 +190,6 @@ public class Product {
         private Map<String, String> specifications = new HashMap<>();
         private Long sellerId;
         private String sellerUsername;
-        private Boolean available = true;
 
         public ProductBuilder name(String name) { this.name = name; return this; }
         public ProductBuilder shortDescription(String shortDescription) { this.shortDescription = shortDescription; return this; }
@@ -213,7 +202,6 @@ public class Product {
         public ProductBuilder specifications(Map<String, String> specifications) { this.specifications = specifications; return this; }
         public ProductBuilder sellerId(Long sellerId) { this.sellerId = sellerId; return this; }
         public ProductBuilder sellerUsername(String sellerUsername) { this.sellerUsername = sellerUsername; return this; }
-        public ProductBuilder available(Boolean available) { this.available = available; return this; }
 
         public Product build() {
             Product product = new Product();
@@ -228,7 +216,6 @@ public class Product {
             product.specifications = this.specifications;
             product.sellerId = this.sellerId;
             product.sellerUsername = this.sellerUsername;
-            product.available = this.available;
             product.averageRating = 0.0;
             product.totalReviews = 0;
             return product;

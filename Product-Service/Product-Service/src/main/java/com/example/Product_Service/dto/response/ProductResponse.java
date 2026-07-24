@@ -30,7 +30,7 @@ public class ProductResponse {
     private Map<String, String> specifications;
     private Long sellerId;
     private String sellerUsername;
-    private Boolean available;
+    private Integer stockCount;
     private Double averageRating;
     private Integer totalReviews;
     private LocalDateTime createdAt;
@@ -83,8 +83,8 @@ public class ProductResponse {
     public String getSellerUsername() { return sellerUsername; }
     public void setSellerUsername(String sellerUsername) { this.sellerUsername = sellerUsername; }
 
-    public Boolean getAvailable() { return available; }
-    public void setAvailable(Boolean available) { this.available = available; }
+    public Integer getStockCount() { return stockCount; }
+    public void setStockCount(Integer stockCount) { this.stockCount = stockCount; }
 
     public Double getAverageRating() { return averageRating; }
     public void setAverageRating(Double averageRating) { this.averageRating = averageRating; }
@@ -119,7 +119,7 @@ public class ProductResponse {
         private Map<String, String> specifications;
         private Long sellerId;
         private String sellerUsername;
-        private Boolean available;
+        private Integer stockCount;
         private Double averageRating;
         private Integer totalReviews;
         private LocalDateTime createdAt;
@@ -137,7 +137,7 @@ public class ProductResponse {
         public ProductResponseBuilder specifications(Map<String, String> specifications) { this.specifications = specifications; return this; }
         public ProductResponseBuilder sellerId(Long sellerId) { this.sellerId = sellerId; return this; }
         public ProductResponseBuilder sellerUsername(String sellerUsername) { this.sellerUsername = sellerUsername; return this; }
-        public ProductResponseBuilder available(Boolean available) { this.available = available; return this; }
+        public ProductResponseBuilder stockCount(Integer stockCount) { this.stockCount = stockCount; return this; }
         public ProductResponseBuilder averageRating(Double averageRating) { this.averageRating = averageRating; return this; }
         public ProductResponseBuilder totalReviews(Integer totalReviews) { this.totalReviews = totalReviews; return this; }
         public ProductResponseBuilder createdAt(LocalDateTime createdAt) { this.createdAt = createdAt; return this; }
@@ -157,7 +157,7 @@ public class ProductResponse {
             r.specifications = this.specifications;
             r.sellerId = this.sellerId;
             r.sellerUsername = this.sellerUsername;
-            r.available = this.available;
+            r.stockCount = this.stockCount;
             r.averageRating = this.averageRating;
             r.totalReviews = this.totalReviews;
             r.createdAt = this.createdAt;

@@ -10,6 +10,7 @@ import com.example.Order_Service.model.OrderItem;
 import com.example.Order_Service.model.OrderStatus;
 import com.example.Order_Service.repository.OrderItemRepository;
 import com.example.Order_Service.repository.OrderRepository;
+import com.example.Order_Service.feign.InventoryServiceClient;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired private OrderItemRepository orderItemRepository;
     @Autowired private CartServiceClient cartServiceClient;
     @Autowired private ProductServiceClient productServiceClient;
+    @Autowired private InventoryServiceClient inventoryServiceClient;
 
     @Override @Transactional
     public OrderResponse placeOrder(Long customerId, PlaceOrderRequest request) {
@@ -55,6 +57,14 @@ public class OrderServiceImpl implements OrderService {
                 log.error("Failed to fetch product for direct order: {}", e.getMessage());
                 throw new IllegalArgumentException("Product not found or unavailable.");
             }
+            
+            try {
+                inventoryServiceClient.deductStock(request.getProductId(), new InventoryServiceClient.StockRequest(request.getQuantity()));
+            } catch (FeignException e) {
+                log.error("Failed to deduct stock for direct order: {}", e.getMessage());
+                throw new IllegalArgumentException("Insufficient stock or product unavailable.");
+            }
+
             BigDecimal itemTotal = orderItem.getProductPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
             totalAmount = itemTotal;
             order.addItem(orderItem);
@@ -82,6 +92,14 @@ public class OrderServiceImpl implements OrderService {
                 }
                 orderItem.setProductPrice(price);
                 orderItem.setSellerId(sellerId);
+                
+                try {
+                    inventoryServiceClient.deductStock(cartItem.getProductId(), new InventoryServiceClient.StockRequest(cartItem.getQuantity()));
+                } catch (FeignException e) {
+                    log.error("Failed to deduct stock for cart item {}: {}", cartItem.getProductId(), e.getMessage());
+                    throw new IllegalArgumentException("Insufficient stock for product " + cartItem.getName());
+                }
+
                 BigDecimal itemTotal = price.multiply(BigDecimal.valueOf(cartItem.getQuantity()));
                 totalAmount = totalAmount.add(itemTotal);
                 order.addItem(orderItem);
@@ -137,6 +155,16 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Order cannot be cancelled in its current state: " + order.getStatus());
         }
         order.setStatus(OrderStatus.CANCELLED);
+        
+        // Restore stock
+        for (OrderItem item : order.getItems()) {
+            try {
+                inventoryServiceClient.addStock(item.getProductId(), new InventoryServiceClient.StockRequest(item.getQuantity()));
+            } catch (Exception e) {
+                log.error("Failed to restore stock for cancelled order {}: {}", orderId, e.getMessage());
+            }
+        }
+
         Order savedOrder = orderRepository.save(order);
         return mapToOrderResponse(savedOrder);
     }

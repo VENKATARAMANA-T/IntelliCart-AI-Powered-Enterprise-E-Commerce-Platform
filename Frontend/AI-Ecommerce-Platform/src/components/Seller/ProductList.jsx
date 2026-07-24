@@ -20,7 +20,7 @@ export function ProductList({ products, onEdit, onDelete }) {
             <th>Name</th>
             <th>Category</th>
             <th>Price</th>
-            <th>Status</th>
+            <th>Stock Count</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -40,8 +40,8 @@ export function ProductList({ products, onEdit, onDelete }) {
               <td>{product.category}</td>
               <td>${product.price?.toFixed(2)}</td>
               <td>
-                <span className={`status-badge ${product.available ? 'active' : 'inactive'}`}>
-                  {product.available ? 'Active' : 'Draft'}
+                <span className={`status-badge ${product.stockCount > 0 ? 'active' : 'inactive'}`}>
+                  {product.stockCount > 0 ? `${product.stockCount} in stock` : 'Out of Stock'}
                 </span>
               </td>
               <td>

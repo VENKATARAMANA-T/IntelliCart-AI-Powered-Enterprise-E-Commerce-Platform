@@ -17,7 +17,7 @@ public class ProductSummaryResponse {
     private BigDecimal discountPercent;
     private Double averageRating;
     private Integer totalReviews;
-    private Boolean available;
+    private Integer stockCount;
     private String thumbnailUrl;       // First image URL only (or null)
     private String sellerUsername;
 
@@ -56,8 +56,8 @@ public class ProductSummaryResponse {
     public Integer getTotalReviews() { return totalReviews; }
     public void setTotalReviews(Integer totalReviews) { this.totalReviews = totalReviews; }
 
-    public Boolean getAvailable() { return available; }
-    public void setAvailable(Boolean available) { this.available = available; }
+    public Integer getStockCount() { return stockCount; }
+    public void setStockCount(Integer stockCount) { this.stockCount = stockCount; }
 
     public String getThumbnailUrl() { return thumbnailUrl; }
     public void setThumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
@@ -82,7 +82,7 @@ public class ProductSummaryResponse {
         private BigDecimal discountPercent;
         private Double averageRating;
         private Integer totalReviews;
-        private Boolean available;
+        private Integer stockCount;
         private String thumbnailUrl;
         private String sellerUsername;
 
@@ -94,7 +94,7 @@ public class ProductSummaryResponse {
         public ProductSummaryResponseBuilder discountPercent(BigDecimal discountPercent) { this.discountPercent = discountPercent; return this; }
         public ProductSummaryResponseBuilder averageRating(Double averageRating) { this.averageRating = averageRating; return this; }
         public ProductSummaryResponseBuilder totalReviews(Integer totalReviews) { this.totalReviews = totalReviews; return this; }
-        public ProductSummaryResponseBuilder available(Boolean available) { this.available = available; return this; }
+        public ProductSummaryResponseBuilder stockCount(Integer stockCount) { this.stockCount = stockCount; return this; }
         public ProductSummaryResponseBuilder thumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; return this; }
         public ProductSummaryResponseBuilder sellerUsername(String sellerUsername) { this.sellerUsername = sellerUsername; return this; }
 
@@ -108,7 +108,7 @@ public class ProductSummaryResponse {
             r.discountPercent = this.discountPercent;
             r.averageRating = this.averageRating;
             r.totalReviews = this.totalReviews;
-            r.available = this.available;
+            r.stockCount = this.stockCount;
             r.thumbnailUrl = this.thumbnailUrl;
             r.sellerUsername = this.sellerUsername;
             return r;

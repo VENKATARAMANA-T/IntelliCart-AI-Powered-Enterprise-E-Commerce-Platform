@@ -33,6 +33,9 @@ export function Storefront({ products, onSelectProduct }) {
               ${product.price?.toFixed(2)}
             </div>
             <p className="seller-name">Sold by {product.sellerUsername}</p>
+            {product.stockCount <= 0 && (
+              <div className="stock-error">Out of Stock</div>
+            )}
           </div>
         </div>
       ))}
